@@ -51,7 +51,7 @@ def edit_image(image_id):
   annotations = json_util.dumps(annotations)
   categories = json_util.dumps(categories)
 
-  if request.is_xhr:
+  if request.headers.get("X-Requested-With") == "XMLHttpRequest":
     # Return just the data
     return jsonify({
       'image' : json.loads(image),

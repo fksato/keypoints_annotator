@@ -31,12 +31,12 @@ Make sure that MongoDB is installed and running (e.g. for Ubuntu 16.04 see [here
 Clone the repo:
 ```
 $ git clone https://github.com/visipedia/annotation_tools.git
-$ cd annotation_tools
+$ cd annotation_tools && direnv allow
 ```
 
 Install the python dependencies:
 ```
-$ pip install -r requirements.txt
+$ poetry install
 ```
 
 Start the annotation tool web server

@@ -110,7 +110,7 @@ def load_dataset(db, dataset, normalize=False):
       print("Successfully inserted %d categories" % (len(response.inserted_ids),))
     except BulkWriteError as bwe:
       panic = filter(lambda x: x['code'] != DUPLICATE_KEY_ERROR_CODE, bwe.details['writeErrors'])
-      if len(panic) > 0:
+      if len(list(panic)) > 0:
         raise
       print("Attempted to insert duplicate categories, %d new categories inserted" % (bwe.details['nInserted'],))
 
@@ -141,7 +141,7 @@ def load_dataset(db, dataset, normalize=False):
 
     except BulkWriteError as bwe:
       panic = filter(lambda x: x['code'] != DUPLICATE_KEY_ERROR_CODE, bwe.details['writeErrors'])
-      if len(panic) > 0:
+      if len(list(panic)) > 0:
         raise
       print("Attempted to insert duplicate images, %d new images inserted" % (bwe.details['nInserted'],))
 
