@@ -1,3 +1,23 @@
+## TLDR
+1. setup annotation db.
+```bash
+python create_kpt_database_file.py /directiory/where/images/are
+```
+2. load dataset file into mongodb.
+```bash
+python -m annotation_tools.db_dataset_utils --action load --dataset /directiory/where/images/are/keypoints_database.json
+```
+3. start image server from directory where images are:
+```bash
+python -m http.server 6008 
+```
+4. start annotation web server from keypoints dir.
+```bash
+python run.py --port 8008 
+```
+5. start annotating @ `localhost:8008/edit_task/?start=0&end=100`
+
+
 ![coco example](tutorials/assets/coco_example.png?raw=true)
 
 # Visipedia Annotation Toolkit
