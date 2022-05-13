@@ -5,13 +5,13 @@ description = "keypoints annotator"
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = ">=3.8,<4.0"
 Flask = "^2.1.2"
 Jinja2 = "^3.1.2"
 Flask-PyMongo = "^2.3.0"
 pymongo = "^4.1.1"
-pathlib = "^1.0.1"
 orjson = "^3.6.8"
+opencv-python = "^4.5.5"
 
 [tool.poetry.dev-dependencies]
 

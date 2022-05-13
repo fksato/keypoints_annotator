@@ -240,11 +240,37 @@ def export_dataset(db, denormalize=False):
 
   return dataset
 
+
+def update_images(db, dataset):
+  # Insert the images
+  assert 'images' in dataset, "Failed to find `images` in dataset object."
+  images = dataset['images']
+  print("Updating %d images" % (len(images),))
+  if len(images) > 0:
+    success = 0
+    # Ensure that the image ids and license ids are strings
+    for image in images:
+      image['id'] = str(image['id'])
+      
+      try:
+        r = db.image.update_one({"id": image['id']}, {"$set": {"width": image["width"], "height": image["height"]}})
+        success += r.matched_count
+
+      except BulkWriteError as bwe:
+        panic = filter(lambda x: x['code'] != DUPLICATE_KEY_ERROR_CODE, bwe.details['writeErrors'])
+        if len(list(panic)) > 0:
+          raise
+        print("Attempted to insert duplicate images, %d new images inserted" % (bwe.details['nInserted'],))
+        
+    print(f"Successfully updated {success} images")
+
+
+
 def parse_args():
 
   parser = argparse.ArgumentParser(description='Dataset loading and exporting utilities.')
 
-  parser.add_argument('-a', '--action', choices=['drop', 'load', 'export'], dest='action',
+  parser.add_argument('-a', '--action', choices=['drop', 'load', 'export', 'update'], dest='action',
                       help='The action you would like to perform.', required=True)
 
   parser.add_argument('-d', '--dataset', dest='dataset_path',
@@ -270,6 +296,7 @@ def parse_args():
 def main():
   args = parse_args()
   db = get_db()
+  print("run")
 
   action = args.action
   if action == 'drop':
@@ -283,6 +310,12 @@ def main():
     dataset = export_dataset(db, denormalize=args.denormalize)
     with open(args.output_path, 'w') as f:
       json.dump(dataset, f)
+  elif action == "update":
+    with open(args.dataset_path) as f:
+      dataset = json.load(f)
+    ensure_dataset_indices(db)
+    update_images(db, dataset)
+
 
 if __name__ == '__main__':
 
