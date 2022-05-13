@@ -1,4 +1,5 @@
 ## TLDR
+0. install MongoDB: https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-ubuntu/
 1. setup annotation db.
 ```bash
 python create_kpt_database_file.py /directiory/where/images/are
@@ -16,6 +17,9 @@ python -m http.server 6008
 python run.py --port 8008 
 ```
 5. start annotating @ `localhost:8008/edit_task/?start=0&end=100`
+
+## Updating annotation configs:
+1. Add/remove keypoints in `kpt_configs.py` 
 
 
 ![coco example](tutorials/assets/coco_example.png?raw=true)
