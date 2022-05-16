@@ -32,11 +32,9 @@ while true; do
 		echo "GPU server access on $USER:$HOST"
 		echo 
 		echo "establishing connection to annotator..."
-		echo "password: "
 		ssh -N -f -L $LOCAL_HOST:$LOCAL_ANNOTATOR_PORT:$LOCAL_HOST:$REMOTE_ANNOTATOR_PORT $USER@$HOST
 		echo "----------"
 		echo "establishing connection to image server..."
-		echo "password: "
 		ssh -N -f -L $LOCAL_HOST:$IMAGE_PORT:$LOCAL_HOST:$IMAGE_PORT $USER@$HOST
 		echo "Running annotator on $LOCAL_HOST:$LOCAL_ANNOTATOR_PORT"
 		break
