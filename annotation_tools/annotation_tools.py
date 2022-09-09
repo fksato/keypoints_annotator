@@ -14,7 +14,8 @@ from flask import Flask, render_template, jsonify, request
 from flask_pymongo import PyMongo
 from bson import json_util
 
-from annotation_tools import default_config as cfg
+# from annotation_tools import default_config as cfg
+from . import default_config as cfg
 
 app = Flask(__name__)
 #app.config.from_object('annotation_tools.default_config')

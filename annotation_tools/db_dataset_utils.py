@@ -222,7 +222,8 @@ def export_dataset(db, denormalize=False):
     for anno in annotations:
       image_width, image_height = image_id_to_w_h[anno['image_id']]
       x, y, w, h = anno['bbox']
-      anno['bbox'] = [x * image_width, y * image_height, w * image_width, h * image_height]
+      # anno['bbox'] = [x * image_width, y * image_height, w * image_width, h * image_height]
+      anno['bbox'] = [x, y, x + w, y + h]
       if 'keypoints' in anno:
         for pidx in range(0, len(anno['keypoints']), 3):
           x, y = anno['keypoints'][pidx:pidx+2]
@@ -265,12 +266,71 @@ def update_images(db, dataset):
     print(f"Successfully updated {success} images")
 
 
+def insert_new_images(db, dataset): 
+  # Insert the images
+  assert 'images' in dataset, "Failed to find `images` in dataset object."
+  images = dataset['images']
+  print("Inserting %d images" % (len(images),))
+  if len(images) > 0:
+
+    # Ensure that the image ids and license ids are strings
+    for image in images:
+      image['id'] = str(image['id'])
+      image['license'] = str(image['license']) if 'license' in image else ''
+
+      # If loading the actual COCO dataset, then remap `coco_url` to `url`
+      if 'url' not in image and 'coco_url' in image:
+        image['url'] = image['coco_url']
+
+      # Add a blank rights holder if it is not present
+      if 'rights_holder' not in image:
+        image['rights_holder'] = ''
+
+    try:
+      response = db.image.insert_many(images, ordered=False)
+      print("Successfully inserted %d images" % (len(response.inserted_ids),))
+
+    except BulkWriteError as bwe:
+      panic = filter(lambda x: x['code'] != DUPLICATE_KEY_ERROR_CODE, bwe.details['writeErrors'])
+      if len(list(panic)) > 0:
+        raise
+      print("Attempted to insert duplicate images, %d new images inserted" % (bwe.details['nInserted'],))
+
+
+def insert_new_annos(db, dataset):
+  # Insert the categories
+  assert 'categories' in dataset, "Failed to find `categories` in dataset object."
+  categories = dataset['categories']
+  print("Inserting %d categories" % (len(categories),))
+  if len(categories) > 0:
+
+    # Ensure that the category ids are strings
+    for cat in categories:
+      cat['id'] = str(cat['id'])
+
+      # Add specific colors to the keypoints
+      if 'keypoints' in cat and 'keypoints_style' not in cat:
+        print("\tWARNING: Adding keypoint styles to category: %s" % (cat['name'],))
+        keypoints_style = []
+        for k in range(len(cat['keypoints'])):
+          keypoints_style.append(COLOR_LIST[k % len(COLOR_LIST)])
+        cat['keypoints_style'] = keypoints_style
+
+    try:
+      response = db.category.insert_many(categories, ordered=False)
+      print("Successfully inserted %d categories" % (len(response.inserted_ids),))
+    except BulkWriteError as bwe:
+      panic = filter(lambda x: x['code'] != DUPLICATE_KEY_ERROR_CODE, bwe.details['writeErrors'])
+      if len(list(panic)) > 0:
+        raise
+      print("Attempted to insert duplicate categories, %d new categories inserted" % (bwe.details['nInserted'],))
+
 
 def parse_args():
 
   parser = argparse.ArgumentParser(description='Dataset loading and exporting utilities.')
 
-  parser.add_argument('-a', '--action', choices=['drop', 'load', 'export', 'update'], dest='action',
+  parser.add_argument('-a', '--action', choices=['drop', 'load', 'export', 'update', 'insert', 'new_annos'], dest='action',
                       help='The action you would like to perform.', required=True)
 
   parser.add_argument('-d', '--dataset', dest='dataset_path',
@@ -315,6 +375,17 @@ def main():
       dataset = json.load(f)
     ensure_dataset_indices(db)
     update_images(db, dataset)
+  elif action == 'insert':
+    with open(args.dataset_path) as f:
+      dataset = json.load(f)
+    ensure_dataset_indices(db)
+    insert_new_images(db, dataset)
+  elif action == 'new_annos':
+    with open(args.dataset_path) as f:
+      dataset = json.load(f)
+    ensure_dataset_indices(db)
+    insert_new_annos(db, dataset)
+
 
 
 if __name__ == '__main__':

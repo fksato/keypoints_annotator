@@ -151,12 +151,24 @@ def export_task_results(db, task_data=None, denormalize=False):
     task_data: Use this to specify which task results to export.
     denormalize: Should the annotations be stored in image coordinates?
   """
+  print("RUNNING")
   if task_data != None:
     assert 'tasks' in task_data,  "Failed to find `tasks` in task_data object."
     task_ids = list(set([task['id'] for task in task_data['tasks']]))
     task_results = list(db.bbox_task_result.find({'task_id' : {"$in" : task_ids}}, projection={'_id' : False}))
   else:
     task_results = list(db.bbox_task_result.find(projection={'_id' : False}))
+  print(task_results)
+  for task_result in task_results:
+    for image_result in task_result['results']:
+      image = image_result['image']
+      width = image['width']
+      height = image['height']
+      for anno in image_result['annotations']:
+        x_0, y_0, w, h = anno['bbox']
+        x_1 = x_0 + w
+        y_1 = y_0 + h
+        anno['bbox'] = [x_0 / width, y_0 / height, x_1 / width, y_1 / height]
 
   if denormalize:
     for task_result in task_results:
@@ -165,8 +177,8 @@ def export_task_results(db, task_data=None, denormalize=False):
         width = image['width']
         height = image['height']
         for anno in image_result['annotations']:
-          x, y, w, h = anno['bbox']
-          anno['bbox'] = [x * width, y * height, w * width, h * height]
+          x_0, y_0, x_1, y_1 = anno['bbox']
+          anno['bbox'] = [x_0 * width, y_0 * height, x_1 * width, y_1 * height]
 
   return task_results
 

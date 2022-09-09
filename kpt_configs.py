@@ -29,11 +29,35 @@ face_keypoints_v1 = [
     "tip nose",
     "left nostril corner",
     "center bottom nose",
-    "right nopstril corner",
+    "right nostril corner",
     "top mouth",
     "left mouth",
     "right mouth",
     "bottom mouth",
+    "bottom chin"
+]
+
+face_keypoints_v2 = [
+    "left eye left",
+    "left eye center",
+    "left eye right",
+    "right eye left",
+    "right eye center",
+    "right eye right",
+    "nose bridge",
+    "tip nose",
+    "left nostril corner",
+    "center bottom nose",
+    "right nostril corner",
+    "left upper lip",
+    "center upper lip",
+    "right upper lip",
+    "left lower lip",
+    "center lower lip",
+    "right lower lip",
+    "left corner lip",
+    "right corner mouth",
+    "top chin",
     "bottom chin"
 ]
 
@@ -103,6 +127,30 @@ face_keypoints_style_v1 = [
     "#FF9900"
 ]
 
+face_keypoints_style_v2 = [
+    "#00FF00",
+    "#00FFFF",
+    "#FFFF00",
+    "#FF0000",
+    "#FF00FF",
+    "#FF6175",
+    "#FF9933",
+    "#CCFFCC",
+    "#FF3486",
+    "#FF9933",
+    "#FF2211",
+    "#FF1326",
+    "#221100",
+    "#CB1326",
+    "#111100",
+    "#326426",
+    "#FF5620",
+    "#FF2216",
+    "#FF4520",
+    "#FF1216",
+    "#FF3320"
+]
+
 mouth_keypoints_style = [
     "#00FF00",
     "#00FFFF",
@@ -147,13 +195,20 @@ categories = [
     },
     {
         "id": "2",
+        "name": "face_v2",
+        "supercategory": "human",
+        "keypoints": face_keypoints_v2,
+        "keypoints_style": face_keypoints_style_v2
+    },
+    {
+        "id": "3",
         "name": "mouth",
         "supercategory": "human",
         "keypoints": mouth_keypoints,
         "keypoints_style": mouth_keypoints_style
     },
     {
-        "id": "3",
+        "id": "4",
         "name": "mouth area",
         "supercategory": "human",
         "keypoints": mouth_keypoints_v1,

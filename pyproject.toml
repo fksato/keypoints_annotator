@@ -12,6 +12,7 @@ Flask-PyMongo = "^2.3.0"
 pymongo = "^4.1.1"
 orjson = "^3.6.8"
 opencv-python = "^4.5.5"
+tqdm = "^4.64.0"
 
 [tool.poetry.dev-dependencies]
 
